@@ -174,8 +174,23 @@ Q2G(请求生成(remap、split)) --> G2I(请求合并与插入) --> I2D(请求�
     -  PCIe 4.0x4  64 Gbps	~7 GB/s     数据中心、AI 训练
 -  PCIe设备网络拓扑：lspci -tv
 
+# 资源限制
+## cgroup
+- 原理：监控进程组的资源使用
+- 常用命令
+```sh
+lscgroup
+sudo cgcreate -g memory:file_reader
+mkdir /sys/fs/cgroup/file_reader
+echo "+memory" > ../cgroup.subtree_control
+cat memory.max
+echo 104857600 > memory.max
+sudo cgset -r memory.max=104857600 /file_reader
+echo 1234 > /sys/fs/cgroup/file_reader/cgroup.procs
 
-
+cgexec -g memory:file_reader ./read_load.sh &
+cgdelete -g memory:file_reader
+```
 
 
 # 内核参数查看与参数调优(/sys / sysfs)
